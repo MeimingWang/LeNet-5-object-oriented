@@ -1,2 +1,2 @@
 # LeNet-5
-LeNet-5 achieved in Object-oriented way based on TensorFlow
+LeNet-5 achieved with object-oriented method, based on TensorFlow.
