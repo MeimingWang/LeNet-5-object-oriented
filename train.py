@@ -5,7 +5,7 @@ from lenet import Lenet
 mnist = read_data_sets("mnist_data/", one_hot=True)
 
 batch_size = 100
-lenet_part = Lenet(mu = 0, sigma = 0.3, learning_rate = 0.001, batch_size = batch_size)
+lenet_part = Lenet(mu = 0, sigma = 0.3, learning_rate = 0.001)
 merged = lenet_part.merged_summary
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
