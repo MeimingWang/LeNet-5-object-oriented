@@ -3,11 +3,10 @@ from sklearn.utils import shuffle
 import numpy as np
 
 class Lenet(object):
-    def __init__(self, mu, sigma, learning_rate, batch_size):
+    def __init__(self, mu, sigma, learning_rate):
         self.mu = mu
         self.sigma = sigma
         self.learning_rate = learning_rate
-        self.batch_size = batch_size
         self._build_graph()
 
     def _build_graph(self, network_name = 'Lenet'):
@@ -46,32 +45,32 @@ class Lenet(object):
     def _build_network_graph(self, scope_name):
         with tf.variable_scope(scope_name):
 
-            #padding
+            #padding Input:None*784, Output:None*32*32
             self.input_x = tf.reshape(self.raw_input_image, [-1, 28, 28, 1])
             self.input_pad = tf.pad(self.input_x, paddings = [[0,0],[2,2],[2,2],[0,0]], mode = 'CONSTANT')
 
-            # Layer 1: Input:N*32*32*1, Output:28*28*6
+            # Layer 1: Input:None*32*32, Output:None*6*14*14
             conv1 = self._cnn_layer('layer_1_conv', 'conv1_w', 'conv1_b', self.input_pad, [5,5,1,6], [1,1,1,1])
             self.conv1 = tf.nn.relu(conv1)
             self.pool1 = self._pooling_layer('layer_1_pooling', self.conv1, [1,2,2,1], [1,2,2,1])
 
-            #Layer 2: Input:N*14*14*6, Output:10*10*16
+            #Layer 2: Input:None*6*14*14, Output:None*16*5*5
             conv2 = self._cnn_layer('layer_2_conv', 'conv2_w', 'conv2_b', self.pool1, [5,5,6,16], [1,1,1,1])
             self.conv2 = tf.nn.relu(conv2)
             self.pool2 = self._pooling_layer('layer_2_pooling', self.conv2, [1,2,2,1], [1,2,2,1])
 
-            #Flatten Layer: Input;N*5*5*16, Output: N*400
+            #Flatten Layer: Input;None*16*5*5, Output: None*400
             fc0 = tf.contrib.layers.flatten(self.pool2)
 
-            # Fc Layer 1: Input:N*400, Output:N*120
+            # Fc Layer 1: Input:None*400, Output:None*120
             fc1 = self._fully_connected_layer('layer_3_fc', 'fc1_w', 'fc1_b', fc0, [400,120])
             self.fc1 = tf.nn.relu(fc1)
 
-            # Fc Layer 2: Input:N*120, Output:N*84
+            # Fc Layer 2: Input:None*120, Output:None*84
             fc2 = self._fully_connected_layer('layer_4_fc', 'fc2_w', 'fc2_b', self.fc1, [120,84])
             self.fc2 = tf.nn.relu(fc2)
 
-            # Fc Layer 3: Input:N*84, Output:N*10
+            # Fc Layer 3: Input:None*84, Output:None*10
             self.logits = self._fully_connected_layer('layer_5_fc', 'fc3_w', 'fc3_b', self.fc2, [84,10])
             self.y_predicted = tf.nn.softmax(self.logits)
             tf.summary.histogram('y_predicted', self.y_predicted)
